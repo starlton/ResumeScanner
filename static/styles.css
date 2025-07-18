@@ -1,0 +1,387 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    /* Original light background gradient */
+    background: linear-gradient(180deg, #f8fafc 0%, #e0e7ff 100%);
+    color: #1e293b; /* Dark text for readability on light background */
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero Section */
+.hero { padding: 60px 0; text-align: center; }
+.hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1e293b; /* Dark heading */
+    margin-bottom: 16px;
+}
+.subheadline {
+    font-size: 1.25rem;
+    color: #475569; /* Grey for subheadings */
+    margin-bottom: 32px;
+    max-width: 600px;
+    margin: 0 auto 32px;
+}
+
+/* Upload Card */
+.upload-section {
+    background: #ffffff; /* White for card background */
+    border-radius: 12px;
+    padding: 32px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    max-width: 800px;
+    margin: 0 auto;
+}
+.upload-box, .job-desc-box { margin-bottom: 24px; }
+.upload-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1e293b; /* Dark text for labels */
+    margin-bottom: 8px;
+    text-align: left;
+}
+input[type="file"], textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e2e8f0; /* Light grey border */
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+    background: #fff; /* White input background */
+    color: #1e293b; /* Dark text for input */
+}
+textarea { min-height: 120px; resize: vertical; }
+input[type="file"]:focus, textarea:focus {
+    border-color: #6366f1; /* Blue accent on focus */
+    outline: none;
+}
+.cta-button {
+    background-color: #6366f1; /* Blue accent for CTA button */
+    color: #fff; /* White text on accent background */
+    padding: 16px 32px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    width: 100%;
+    max-width: 300px;
+    display: block;
+    margin: 0 auto;
+}
+.cta-button:hover {
+    background-color: #4f46e5; /* Darker blue on hover */
+    transform: translateY(-2px);
+}
+
+/* Results Section */
+.results-section {
+    margin-top: 40px;
+    background: #ffffff; /* White for results card background */
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Subtle shadow */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+}
+
+.ats-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 24px;
+    position: relative;
+}
+.progress-ring {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 16px;
+}
+.progress-ring .progress-background {
+    stroke: #e2e8f0; /* Light grey for background circle */
+    stroke-width: 8;
+    fill: none;
+}
+.progress-ring .progress {
+    stroke: #6366f1; /* Blue accent for progress bar */
+    stroke-width: 8;
+    fill: none;
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+    transition: stroke-dashoffset 0.5s ease;
+    stroke-linecap: round;
+    transform: rotate(-90deg); /* Rotate only the progress bar */
+    transform-origin: 60px 60px; /* Rotate around the center of the circle */
+}
+/* Style for SVG text to center it and keep it upright */
+.progress-ring .score-text-svg {
+    font-size: 1.5rem; /* Adjusted font size for better fit */
+    font-weight: 700;
+    fill: #1e293b; /* Dark text color for score */
+}
+
+.summary-rewrite {
+    text-align: center;
+    margin-bottom: 24px;
+    width: 100%;
+}
+.summary-rewrite p {
+    font-size: 1.1rem;
+    color: #475569; /* Grey for summary text */
+}
+
+/* Tab container styles */
+.tab-container {
+    width: 100%;
+    margin-top: 20px;
+    border: 1px solid #e2e8f0; /* Light grey border */
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f8fafc; /* Light background for tab container */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.tab-buttons {
+    display: flex;
+    border-bottom: 1px solid #e2e8f0; /* Light grey border */
+    background-color: #f0f4ff; /* Lighter blue for tab buttons background */
+}
+
+.tab-button {
+    flex: 1;
+    padding: 18px 25px;
+    border: none;
+    background-color: transparent;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #475569; /* Grey for inactive tab buttons */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 4px solid transparent;
+    position: relative;
+    text-align: center;
+}
+
+.tab-button:hover {
+    background-color: #e2e8f0; /* Light grey on hover */
+    color: #1e293b; /* Dark text on hover */
+}
+
+.tab-button.active {
+    color: #6366f1; /* Blue accent for active tab */
+    border-bottom: 4px solid #6366f1; /* Blue for active tab border */
+    background-color: #ffffff; /* White background for active tab */
+    box-shadow: 0 -2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.tab-content {
+    padding: 20px;
+    display: none;
+    background-color: #ffffff; /* White background for tab content */
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Styling for cards within tabs */
+.tab-content-card {
+    background: #f0f4ff; /* Lighter blue for content cards */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+    margin-bottom: 20px;
+    color: #1e293b; /* Dark text */
+    line-height: 1.5;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.tab-content-card:last-child {
+    margin-bottom: 0;
+}
+
+.tab-content-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4f46e5; /* Darker blue for card headings */
+    margin-bottom: 16px;
+    border-bottom: 2px solid #c7d2fe; /* Lighter blue border */
+    padding-bottom: 8px;
+}
+
+.tab-content-card ul {
+    list-style-position: inside;
+    padding-left: 0;
+    margin-left: 0;
+}
+.tab-content-card ul li {
+    margin-bottom: 8px;
+    padding-left: 24px;
+    position: relative;
+    background: #e0e7ff; /* Even lighter blue for list items */
+    border-radius: 8px;
+    padding: 10px 16px;
+    box-shadow: 0 1px 4px rgba(99, 102, 241, 0.1);
+    font-weight: 500;
+    color: #3730a3; /* Dark blue text for list items */
+}
+.tab-content-card ul li::before {
+    content: "•";
+    color: #4f46e5; /* Darker blue for bullet points */
+    position: absolute;
+    left: 8px;
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+/* Checklist specific styles */
+.checklist ul li.failed {
+    color: #dc2626; /* Red for failed items */
+    font-weight: 600;
+}
+.checklist ul li.passed {
+    color: #16a34a; /* Green for passed items */
+    font-weight: 600;
+}
+
+/* Tailored Resume Section (updated for minimalistic look) */
+.tailored-resume {
+    display: flex; /* Use flexbox for centering content */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Center horizontally */
+    justify-content: center; /* Center vertically */
+    min-height: 200px; /* Give it some height */
+    text-align: center; /* Center text within the card */
+    background: #f0f4ff; /* Lighter blue for the card */
+    padding: 30px; /* More padding */
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+}
+
+.tailored-resume h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 20px; /* More space below heading */
+    border-bottom: none; /* Remove border for minimalistic look */
+    padding-bottom: 0;
+}
+
+.tailored-resume .cta-button {
+    margin-top: 0; /* Adjust margin as it's now centered */
+    max-width: 280px;
+    padding: 15px 30px; /* Larger button */
+    font-size: 1.1rem; /* Larger font */
+    box-shadow: 0 4px 8px rgba(99, 102, 241, 0.2); /* Add shadow to button */
+}
+/* No specific style for #resume-preview as it's removed from HTML */
+
+/* Loading Overlay and Animation */
+#loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0.8); /* Light overlay background */
+    color: #6366f1; /* Blue for loading text */
+}
+.loader {
+    border-top: 6px solid #6366f1; /* Blue for loader */
+}
+
+
+/* How It Works Section */
+.how-it-works {
+    padding: 60px 0;
+    background: #ffffff; /* White background */
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+.how-it-works h2 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 40px;
+    color: #1e293b; /* Dark heading */
+}
+.steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+    gap: 24px;
+    text-align: center;
+}
+.step h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b; /* Dark text for step headings */
+}
+.step p {
+    color: #475569; /* Grey for step descriptions */
+}
+
+/* Trust Icons Section */
+.trust-section {
+    padding: 40px 0;
+    background: #f8fafc; /* Light background */
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.03);
+}
+.trust-icons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+.trust-item p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b; /* Dark text */
+    padding: 12px;
+    border: 1px solid #e0e7ff; /* Light blue border */
+    border-radius: 8px;
+    background-color: #ffffff; /* White background for trust items */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Footer */
+.footer {
+    padding: 24px 0;
+    background: #1e293b; /* Dark background for footer */
+    color: #ffffff; /* White text */
+    text-align: center;
+}
+.footer nav a {
+    color: #ffffff; /* White links */
+    text-decoration: none;
+    margin: 0 8px;
+    font-size: 0.875rem;
+}
+.footer nav a:hover { text-decoration: underline; }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .hero h1 { font-size: 1.875rem; }
+    .subheadline { font-size: 1rem; }
+    .upload-section { padding: 24px; }
+    .cta-button { font-size: 1rem; padding: 12px 24px; }
+    .steps { grid-template-columns: 1fr; }
+    .tab-buttons { flex-direction: column; }
+    .tab-button { border-bottom: none; border-right: 3px solid transparent; }
+    .tab-button.active { border-bottom: none; border-right: 3px solid #6366f1; } /* Blue for mobile active tab */
+    .tab-content-card {
+        max-height: 300px;
+    }
+}

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ResumeScanner AI - Optimize Your Resume for Any Job</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+        rel="stylesheet"
+    />
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <style>
+        /* Basic styling for the custom message box */
+        .message-box-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001; /* Above loading overlay */
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0s, opacity 0.3s ease;
+        }
+        .message-box-overlay.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+        .message-box-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            font-family: 'Inter', sans-serif;
+        }
+        .message-box-content p {
+            font-size: 1.1rem;
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+        .message-box-content button {
+            background-color: #6366f1;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .message-box-content button:hover {
+            background-color: #4f46e5;
+        }
+        /* Loader animation for the loading overlay */
+        .loader {
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #6366f1;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Is Your Resume Getting Rejected by Bots?</h1>
+            <p class="subheadline">
+                Scan your resume against any job description — and get AI-powered suggestions to stand out.
+            </p>
+
+            <div class="upload-section">
+                <div class="upload-box">
+                    <label for="resume-upload" class="upload-label">
+                        Upload Resume (PDF/DOCX)
+                    </label>
+                    <input
+                        type="file"
+                        id="resume-upload"
+                        accept=".pdf,.docx"
+                        aria-label="Upload resume file"
+                    />
+                </div>
+
+                <div class="job-desc-box">
+                    <label for="job-desc" class="upload-label">
+                        Paste Job Description
+                    </label>
+                    <textarea
+                        id="job-desc"
+                        placeholder="Paste the job description here..."
+                        aria-label="Job description input"
+                    ></textarea>
+                </div>
+
+                <button id="scan-btn" class="cta-button">
+                    Scan My Resume
+                </button>
+            </div>
+
+            <div class="results-section" id="results" style="display: none;">
+                <h2 style="width: 100%; text-align: center; margin-bottom: 24px;">Your Resume Analysis</h2>
+                <div class="score-summary" style="display: flex; align-items: center; margin-bottom: 16px; justify-content: center; position: relative;">
+                    <svg class="progress-ring" width="120" height="120">
+                        <!-- Background circle for the progress bar -->
+                        <circle
+                            class="progress-background"
+                            stroke="#e2e8f0"
+                            stroke-width="8"
+                            fill="transparent"
+                            r="50"
+                            cx="60"
+                            cy="60"
+                        />
+                        <!-- Actual progress circle -->
+                        <circle
+                            class="progress"
+                            stroke="#6366f1"
+                            stroke-width="8"
+                            fill="transparent"
+                            r="50"
+                            cx="60"
+                            cy="60"
+                            stroke-dasharray="314"
+                            stroke-dashoffset="314"
+                        />
+                        <!-- Score text moved inside SVG for proper centering -->
+                        <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" class="score-text-svg" fill="#1e293b" font-size="1.5rem" font-weight="700">0%</text>
+                    </svg>
+                </div>
+                <!-- Summary text moved here, outside of tabs, and not duplicated -->
+                <div class="summary-rewrite" style="margin-bottom: 24px; text-align: center; width: 100%;">
+                    <p id="summary-text" style="font-size: 1.1rem; color: #475569;"></p>
+                </div>
+
+                <div class="tab-container" style="width: 100%;">
+                    <div class="tab-buttons">
+                        <button class="tab-button active" data-tab="ai-feedback-tab">AI Feedback</button>
+                        <button class="tab-button" data-tab="checklist-tab">Resume Checklist</button>
+                        <button class="tab-button" data-tab="tailored-resume-tab">Tailored Resume</button>
+                    </div>
+                    <div class="tab-content active" id="ai-feedback-tab">
+                        <div class="tab-content-card" id="ai-feedback-card">
+                            <h3>AI-Powered Feedback</h3>
+                            <ul id="ai-feedback-list"></ul>
+                        </div>
+                        <div class="tab-content-card" id="suggestions-card" style="margin-top: 24px;">
+                            <h3>Improvement Suggestions</h3>
+                            <ul id="suggestions-list"></ul>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="checklist-tab">
+                        <div class="tab-content-card" id="checklist-card">
+                            <h3>Resume Checklist</h3>
+                            <ul id="checklist-list"></ul>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="tailored-resume-tab">
+                        <div class="tab-content-card" id="tailored-resume-card">
+                            <h3>Download Your Tailored Resume</h3>
+                            <p style="color: #475569; margin-bottom: 20px;">Click the button below to download your AI-tailored resume, optimized for the job description.</p>
+                            <!-- Removed iframe for preview -->
+                            <a id="download-resume" href="#" class="cta-button" target="_blank">Download Tailored Resume</a> <!-- Removed download attribute -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <h3>1. Upload</h3>
+                    <p>Upload your resume in PDF or DOCX format and paste the job description.</p>
+                </div>
+                <div class="step">
+                    <h3>2. Analyze</h3>
+                    <p>Our AI compares your resume to the job description for ATS compatibility.</p>
+                </div>
+                <div class="step">
+                    <h3>3. Improve</h3>
+                    <p>Get a match score, tailored suggestions, an optimized summary, and in-depth AI feedback.</p>
+                X</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Icons Section -->
+    <section class="trust-section">
+        <div class="container trust-icons">
+            <div class="trust-item"><p>Private & Secure</p></div>
+            <div class="trust-item"><p>AI-Powered Analysis</p></div>
+            <div class="trust-item"><p>No Sign-Up Needed</p></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2025 ResumeScanner AI. All rights reserved.</p>
+            <nav>
+                <a href="#privacy">Privacy Policy</a> |
+                <a href="#terms">Terms of Service</a> |
+                <a href="#contact">Contact Us</a>
+            </nav>
+        </div>
+    </footer>
+
+    <!-- Custom Message Box -->
+    <div id="message-box-overlay" class="message-box-overlay">
+        <div class="message-box-content">
+            <p id="message-box-text"></p>
+            <button id="message-box-ok">OK</button>
+        </div>
+    </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const scanBtn = document.getElementById('scan-btn');
+        const aiFeedbackList = document.getElementById('ai-feedback-list');
+        const tailoredResumeCard = document.getElementById('tailored-resume-card');
+        const downloadResume = document.getElementById('download-resume');
+        const resultsSection = document.getElementById('results');
+        const suggestionsList = document.getElementById('suggestions-list');
+        const summaryParagraph = document.getElementById('summary-text');
+        const progressCircle = document.querySelector('.progress');
+        const scoreTextSvg = document.querySelector('.score-text-svg');
+        const checklistCard = document.getElementById('checklist-card');
+        const checklistList = document.getElementById('checklist-list');
+
+        // Custom Message Box functions
+        const messageBoxOverlay = document.getElementById('message-box-overlay');
+        const messageBoxText = document.getElementById('message-box-text');
+        const messageBoxOkBtn = document.getElementById('message-box-ok');
+
+        function showMessageBox(message) {
+            messageBoxText.textContent = message;
+            messageBoxOverlay.classList.add('visible');
+        }
+
+        messageBoxOkBtn.addEventListener('click', () => {
+            messageBoxOverlay.classList.remove('visible');
+        });
+
+        // Create loading overlay
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loading-overlay';
+        loadingOverlay.style.position = 'fixed';
+        loadingOverlay.style.top = 0;
+        loadingOverlay.style.left = 0;
+        loadingOverlay.style.width = '100%';
+        loadingOverlay.style.height = '100%';
+        loadingOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.justifyContent = 'center';
+        loadingOverlay.style.alignItems = 'center';
+        loadingOverlay.style.zIndex = 1000;
+        loadingOverlay.style.fontSize = '1.5rem';
+        loadingOverlay.style.color = '#6366f1';
+        loadingOverlay.style.fontWeight = '700';
+        loadingOverlay.style.visibility = 'hidden';
+        loadingOverlay.style.opacity = 0;
+        loadingOverlay.style.transition = 'visibility 0s, opacity 0.3s ease';
+        loadingOverlay.innerHTML = '<div class="loader"></div><span id="loading-message" style="margin-left: 12px;">Scanning Resume...</span>';
+        document.body.appendChild(loadingOverlay);
+
+        const loadingMessageSpan = document.getElementById('loading-message');
+        const loadingMessages = [
+            "Scanning Resume...",
+            "Analyzing Keywords...",
+            "Generating Feedback...",
+            "Tailoring for Success...",
+            "Almost Done!"
+        ];
+        let messageIndex = 0;
+        let messageInterval;
+
+        function showLoadingOverlay() {
+            loadingOverlay.style.visibility = 'visible';
+            loadingOverlay.style.opacity = 1;
+            messageIndex = 0;
+            loadingMessageSpan.textContent = loadingMessages[messageIndex];
+            messageInterval = setInterval(() => {
+                messageIndex = (messageIndex + 1) % loadingMessages.length;
+                loadingMessageSpan.textContent = loadingMessages[messageIndex];
+            }, 4000); // Change message every 2 seconds
+        }
+
+        function hideLoadingOverlay() {
+            clearInterval(messageInterval); // Stop cycling messages
+            loadingOverlay.style.visibility = 'hidden';
+            loadingOverlay.style.opacity = 0;
+        }
+
+        scanBtn.addEventListener('click', () => {
+            const file = document.getElementById('resume-upload').files[0];
+            const desc = document.getElementById('job-desc').value.trim();
+
+            if (!file || !desc) {
+                showMessageBox('Please upload a resume and enter a job description.');
+                return;
+            }
+
+            showLoadingOverlay(); // Show loading overlay
+
+            const data = new FormData();
+            data.append('resume', file);
+            data.append('job_description', desc);
+
+            fetch('/scan', { method: 'POST', body: data })
+                .then(res => {
+                    if (!res.ok) {
+                        return res.json().then(err => Promise.reject(err.error || 'Unknown error'));
+                    }
+                    return res.json();
+                })
+                .then(d => {
+                    hideLoadingOverlay();
+                    if (d.error) {
+                        showMessageBox(d.error);
+                        return;
+                    }
+                    resultsSection.style.display = 'block';
+
+                    const offset = 314 * (1 - d.ats_score / 100);
+                    if (progressCircle) progressCircle.style.strokeDashoffset = offset;
+                    if (scoreTextSvg) scoreTextSvg.textContent = d.ats_score + '%';
+
+                    if (suggestionsList) suggestionsList.innerHTML = d.suggestions.map(s => `<li>${s}</li>`).join('');
+                    if (summaryParagraph) summaryParagraph.textContent = d.summary;
+
+                    const feedbackLines = d.ai_feedback
+                        .split('\n')
+                        .filter(line => {
+                            const trimmed = line.trim();
+                            return trimmed !== '' && (/^\d+\./.test(trimmed) || /improv|add|quantify|highlight|focus|ensure/i.test(trimmed));
+                        })
+                        .map(line => `<li>${line.trim()}</li>`)
+                        .join('');
+                    aiFeedbackList.innerHTML = feedbackLines;
+
+                    if (d.checklist && d.checklist.length > 0) {
+                        checklistList.innerHTML = d.checklist.map(item => {
+                            const icon = item.passed ? '✔️' : '❌';
+                            const liClass = item.passed ? 'passed' : 'failed';
+                            return `<li class="${liClass}">${icon} ${item.criteria}</li>`;
+                        }).join('');
+                    }
+
+                    // Only set download href if URL is provided and enable button
+                    if (d.tailored_resume_url) {
+                        downloadResume.href = d.tailored_resume_url;
+                        downloadResume.style.opacity = '1';
+                        downloadResume.style.pointerEvents = 'auto';
+                    } else {
+                        downloadResume.removeAttribute('href'); // Remove href if no URL
+                        downloadResume.style.opacity = '0.5'; // Visually disable
+                        downloadResume.style.pointerEvents = 'none'; // Disable clicks
+                    }
+                })
+                .catch((error) => {
+                    hideLoadingOverlay();
+                    console.error('Scan error:', error);
+                    showMessageBox(`Scan failed: ${error.message || error}. Please try again.`);
+                });
+
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
